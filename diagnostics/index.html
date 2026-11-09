@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8">
+<title>СТО форма</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+    background-color: #121212;
+}
+.card {
+    border-radius: 15px;
+}
+textarea {
+    min-height: 100px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="card p-4 shadow-lg">
+        <h3 class="mb-3 text-center">Диагностика подвески</h3>
+
+        <select id="type" class="form-select mb-2">
+            <option>Диагностика подвески вибростендом</option>
+            <option>Осмотр подвески диагностика ходовой части механиком</option>
+        </select>
+
+        <select id="brand" class="form-select mb-2">
+            <option value="AUDI">Audi (Ауди) Германия</option>
+            <option value="BMW">BMW (БМВ) Германия</option>
+            <option value="CHERY">CHERY (Чери) Китай</option>
+            <option value="CHEVROLET">Chevrolet (Шевроле) США</option>
+            <option value="CITROEN">Citroen (Ситроен) Франция</option>
+            <option value="DAEWOO">Daewoo (Дэу) Южная Корея</option>
+            <option value="FORD">Ford (Форд) США</option>
+            <option value="GAZ">ГАЗ (ГАЗ) Россия</option>
+            <option value="GEELY">Geely (Джили) Китай</option>
+            <option value="HAVAL">Haval (Хавэйл) Китай</option>
+            <option value="HONDA">Honda (Хонда) Япония</option>
+            <option value="HYUNDAI">Hyundai (Хендэ) Южная Корея</option>
+            <option value="KIA">Kia (Киа) Южная Корея</option>
+            <option value="LAND_ROVER">Land Rover (Ленд Ровер) Великобритания</option>
+            <option value="LEXUS">Lexus (Лексус) Япония</option>
+            <option value="MAZDA">Mazda (Мазда) Япония</option>
+            <option value="MERCEDES">Mercedes-Benz (Мерседес-Бенц) Германия</option>
+            <option value="MITSUBISHI">Mitsubishi (Митсубиси) Япония</option>
+            <option value="NISSAN">Nissan (Ниссан) Япония</option>
+            <option value="OPEL">Opel (Опель) Германия</option>
+            <option value="PEUGEOT">Peugeot (Пежо) Франция</option>
+            <option value="PORSCHE">Porsche (Порше) Германия</option>
+            <option value="RENAULT">Renault (Рено) Франция</option>
+            <option value="SKODA">Skoda (Шкода) Чехия</option>
+            <option value="SUBARU">Subaru (Субару) Япония</option>
+            <option value="SUZUKI">Suzuki (Сузуки) Япония</option>
+            <option value="TOYOTA">Toyota (Тойота) Япония</option>
+            <option value="VAZ">Lada (ВАЗ) Россия</option>
+            <option value="VOLKSWAGEN">Volkswagen (Фольксваген) Германия</option>
+            <option value="VOLVO">Volvo (Вольво) Швеция</option>
+        </select>
+
+        <input id="phone" class="form-control mb-2" value="+7">
+
+        <textarea id="front" class="form-control mb-2" placeholder="Передняя подвеска"></textarea>
+        <textarea id="rear" class="form-control mb-2" placeholder="Задняя подвеска"></textarea>
+        <textarea id="other" class="form-control mb-2" placeholder="Другое"></textarea>
+
+        <button onclick="saveFile()" class="btn btn-primary w-100 mt-2">Сохранить</button>
+
+        <div id="status" class="text-success mt-3 text-center"></div>
+    </div>
+</div>
+
+<script>
+function sanitize(str) {
+    return str.replace(/[\\/:*?"<>|]/g, '');
+}
+
+function saveFile() {
+    let type = document.getElementById('type').value;
+    let brand = document.getElementById('brand').value;
+    let phone = document.getElementById('phone').value;
+    let front = document.getElementById('front').value;
+    let rear = document.getElementById('rear').value;
+    let other = document.getElementById('other').value;
+
+    let now = new Date();
+
+    let cleanType = type
+        .replace(/[()]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    let date = now.toLocaleDateString('ru-RU').replace(/\./g, '-');
+    let time = now.toTimeString().slice(0,5).replace(':','-');
+
+    let filename = sanitize(`${brand} ${phone} ${cleanType} ${date}г ${time}ч.txt`);
+
+    let content = 
+`Тип диагностики: ${type}
+
+Марка: ${brand}
+Телефон: ${phone}
+
+Передняя подвеска:
+${front}
+
+Задняя подвеска:
+${rear}
+
+Другое:
+${other}
+`;
+
+    let blob = new Blob([content], { type: "text/plain" });
+
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+
+    // очистка
+    document.getElementById('front').value = '';
+    document.getElementById('rear').value = '';
+    document.getElementById('other').value = '';
+
+    let status = document.getElementById('status');
+    status.innerText = "Сохранено ✔ Можно следующую машину";
+
+    setTimeout(() => {
+        status.innerText = "";
+    }, 3000);
+}
+</script>
+
+</body>
+</html>
